@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -7,20 +9,40 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-mongoose.connect("mongodb://127.0.0.1:27017/customerDB")
+mongoose.connect(process.env.MONGO_URI)
 .then(() => {
+
     console.log("MongoDB Connected");
+
 })
 .catch((err) => {
+
+    console.log("MongoDB Connection Error:");
     console.log(err);
+
 });
 
 const customerSchema = new mongoose.Schema({
 
-    name: String,
-    email: String,
-    password: String,
-    phone: String
+    name: {
+        type: String,
+        required: true
+    },
+
+    email: {
+        type: String,
+        required: true
+    },
+
+    password: {
+        type: String,
+        required: true
+    },
+
+    phone: {
+        type: String,
+        required: true
+    }
 
 });
 
@@ -30,23 +52,49 @@ app.post("/register", async (req, res) => {
 
     try {
 
-        const customer = new Customer(req.body);
+        console.log("Received Data:");
+        console.log(req.body);
 
-        await customer.save();
+        const customer = new Customer({
 
-        res.json({
+            name: req.body.name,
+            email: req.body.email,
+            password: req.body.password,
+            phone: req.body.phone
+
+        });
+
+        const savedCustomer = await customer.save();
+
+        console.log("Saved Successfully:");
+        console.log(savedCustomer);
+
+        res.status(200).json({
+
             message: "Customer Stored Successfully"
+
         });
 
     }
 
     catch (error) {
 
+        console.log("SAVE ERROR:");
+        console.log(error);
+
         res.status(500).json({
+
             message: "Error storing customer"
+
         });
 
     }
+
+});
+
+app.get("/", (req, res) => {
+
+    res.send("Backend Running Successfully");
 
 });
 
