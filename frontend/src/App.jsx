@@ -8,16 +8,20 @@ function App() {
     const [phone, setPhone] = useState("");
     const [status, setStatus] = useState("");
 
-
-
     const handleSubmit = async (e) => {
 
         e.preventDefault();
 
+        if (!name || !email || !password || !phone) {
+
+            setStatus("Please fill all fields");
+            return;
+
+        }
+
         if (phone.length !== 10) {
 
             setStatus("Phone number must contain 10 digits");
-
             return;
 
         }
@@ -50,12 +54,20 @@ function App() {
 
             const data = await response.json();
 
-            setStatus(data.message);
+            if (response.ok) {
 
-            setName("");
-            setEmail("");
-            setPassword("");
-            setPhone("");
+                setStatus("✅ Customer Stored Successfully");
+
+                setName("");
+                setEmail("");
+                setPassword("");
+                setPhone("");
+
+            } else {
+
+                setStatus("❌ " + data.message);
+
+            }
 
         }
 
@@ -63,13 +75,11 @@ function App() {
 
             console.log(error);
 
-            setStatus("Server Error");
+            setStatus("❌ Cannot connect to server");
 
         }
 
     };
-
-
 
     return (
 
@@ -109,7 +119,7 @@ function App() {
                             value={name}
                             onChange={(e) =>
                                 setName(
-                                    e.target.value.replace(/[^a-zA-Z ]/g, '')
+                                    e.target.value.replace(/[^a-zA-Z ]/g, "")
                                 )
                             }
                             className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 outline-none focus:border-emerald-400 transition"
@@ -166,7 +176,7 @@ function App() {
                             maxLength="10"
                             onChange={(e) =>
                                 setPhone(
-                                    e.target.value.replace(/[^0-9]/g, '')
+                                    e.target.value.replace(/[^0-9]/g, "")
                                 )
                             }
                             className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 outline-none focus:border-emerald-400 transition"
