@@ -38,7 +38,7 @@ function App() {
         try {
 
             const response = await fetch(
-                "http://localhost:5000/register",
+                "https://customer-login-react.onrender.com/register",
                 {
 
                     method: "POST",
